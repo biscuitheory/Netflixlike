@@ -10,7 +10,13 @@ export async function fetchMovie(movieId) {
   return movie;
 }
 
-export function fetchNetflixOriginals() {}
+export async function fetchNetflixOriginals() {
+  const url = `https://api.themoviedb.org/3/discover/tv?api_key=617f779f9850bfb3355824689e154920&with_networks=213`;
+  let res = await fetch(url);
+  let netflixOriginals = await res.json();
+  // console.log(movie);
+  return netflixOriginals;
+}
 
 export function fetchTrending() {}
 
