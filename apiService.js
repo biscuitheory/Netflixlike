@@ -18,11 +18,26 @@ export async function fetchNetflixOriginals() {
   return netflixOriginals;
 }
 
-export function fetchTrending() {}
+export async function fetchTrending() {
+  const url = `https://api.themoviedb.org/3/trending/all/day?api_key=617f779f9850bfb3355824689e154920`
+  let res = await fetch(url);
+  let trendingNow = await res.json();
+  return trendingNow;
+}
 
-export function fetchTopRated() {}
+export async function fetchTopRated() {
+  const url = `https://api.themoviedb.org/3/movie/top_rated?api_key=617f779f9850bfb3355824689e154920&page=1`
+  let res = await fetch(url);
+  let topRated = await res.json();
+  return topRated;
+}
 
-export function fetchByGenreMovies(genre) {}
+export async function fetchByGenreMovies(genre) {
+  const url = `https://api.themoviedb.org/3/discover/movie?api_key=617f779f9850bfb3355824689e154920&with_genres=${genre}`
+  let res = await fetch(url);
+  let genreMovies = await res.json();
+  return genreMovies;
+}
 
 
 
