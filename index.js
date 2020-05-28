@@ -1,123 +1,61 @@
-import {fetchMovie, fetchNetflixOriginals, fetchTrending, fetchTopRated, fetchByGenreMovies} from "./apiService.js";
+import { fetchMovie, fetchSerie, fetchNetflixOriginals, fetchTrending, fetchTopRated, fetchByGenreMovies } from "./apiService.js";
 import Header from "./components/Header.mjs";
 
-//3
 (async () => {
-    let movie = await fetchMovie(157336);
-    // console.log(movie)
+    // data sur les Movie : pour le header
+    let movie = await fetchMovie(542178);
+    // récupérer les résultats des films pour le header
     document.getElementById("header").innerHTML = Header(movie);
+    // affichage de l'image de fond 
     document.getElementById("header").style.backgroundImage = `url(https://image.tmdb.org/t/p/original/${movie.backdrop_path})`;
 
-    //data sur les netflixOriginals
-    let netflixOriginals = await fetchNetflixOriginals();
-    netflixOriginals = netflixOriginals.results;
-    //sectionOriginals structure de la section
-    let sectionOriginals = document.getElementsByClassName("movies__container--movie__netflix")[0]
-    // récupérer les résultats de la section Netflix Originals
-    for (let i = 0; i < netflixOriginals.length; i++) {
-        sectionOriginals.innerHTML += `
-            <img data-key-id=${netflixOriginals[i].id} src="https://image.tmdb.org/t/p/original//${netflixOriginals[i].poster_path}" class="movies__container--movie-image"/>
-            `
-    }
-    sectionOriginals.style.overflow = "auto"
-    sectionOriginals.style.display = "flex"
+    // function pour afficher les vignettes film ou série des sections : récupère données via apiService
+    // funcFetch : function fetch avec ou sans paramètre (paraFunc, null par défaut, autrement désigne le genre), htmlElmt : la div conteneur de l'image, 
+    async function display(funcFetch, htmlElmt, typeImg, paraFunc = null) {
 
-    //data sur les netflixTrending
-    let netflixTrending = await fetchTrending();
-    netflixTrending = netflixTrending.results
-    //moviesContainer des sections suivantes
-    let moviesContainer = document.getElementsByClassName("movies__container--movie")
-    //trending structure de la section
-    let trending = moviesContainer[0]
-    // récupérer les résultats de la section "Trending Now"
-    for (let i = 0; i < netflixTrending.length; i++) {
-        trending.innerHTML += `
-        <img data-key-id=${netflixTrending[i].id} src="https://image.tmdb.org/t/p/original//${netflixTrending[i].backdrop_path}" class="movies__container--movie-image"/>
-        `
-    }
-    trending.style.overflow = "auto"
-    trending.style.display = "flex"
+        // data de chaque section/catégorie de films/séries
+        let showsMovies = await funcFetch(paraFunc)
+        showsMovies = showsMovies.results
+        console.log(showsMovies)
+   
+        // mise en forme de l'affichage des vignettes
+        htmlElmt.style.overflow = "auto"
+        htmlElmt.style.display = "flex"
 
-    //data sur les netflixTopRated
-    let netflixTopRated = await fetchTopRated();
-    netflixTopRated = netflixTopRated.results
-    //trending structure de la section
-    let topRated = moviesContainer[1]
-    // récupérer les résultats de la section "Top Rated"
-    for (let i = 0; i < netflixTopRated.length; i++) {
-        topRated.innerHTML += `
-        <img data-key-id=${netflixTopRated[i].id} src="https://image.tmdb.org/t/p/original//${netflixTopRated[i].backdrop_path}" class="movies__container--movie-image"/> `
-    }
-    topRated.style.overflow = "auto"
-    topRated.style.display = "flex"
+        // condition pour afficher les images type poster pour les séries
+        if (typeImg == 'poster') {
+            // en parcourant le tableau des films et séries 
+            for (let i = 0; i < showsMovies.length; i++) {
+                // identifier et afficher uniquement les séries
+                if (showsMovies[i].id != 'null'){
+                    htmlElmt.innerHTML += `
+                    <img data-key-id=${showsMovies[i].id} data-key-serie=true src="https://image.tmdb.org/t/p/original//${showsMovies[i].poster_path}" class="movies__container--movie-image" onerror="this.style.display='none'" alt="Poster de ${showsMovies[i].original_title || showsMovies[i].original_name}"/>
+                `
+                } else {
+                    continue
+                } 
+            }
+        // condition pour afficher les images type backdrop pour les films
+        } else if (typeImg == 'backdrop') {
+            for (let i = 0; i < showsMovies.length; i++) {
+                // identifier et afficher uniquement les films
+                if (showsMovies[i].id != 'null'){
+                    htmlElmt.innerHTML += `
+                    <img data-key-id=${showsMovies[i].id} data-key-serie=false src="https://image.tmdb.org/t/p/original//${showsMovies[i].backdrop_path}" class="movies__container--movie-image" onerror="this.style.display='none'" alt="Image de ${showsMovies[i].original_title || showsMovies[i].original_name}"/>
+                `
+                } else {
+                    continue
+                }
+            }
+        }
 
-    //data sur les moviesGenreAction
-    let moviesGenreAction = await fetchByGenreMovies(28)
-    moviesGenreAction = moviesGenreAction.results
-    //actionMovie structure de la section
-    let actionMovies = moviesContainer[2]
-    // récupérer les résultats des films de genre Action
-    for (let i = 0; i < moviesGenreAction.length; i++) {
-        // console.log(movieGenreActions)
-        actionMovies.innerHTML += ` 
-        <img data-key-id=${moviesGenreAction[i].id} src="https://image.tmdb.org/t/p/original//${moviesGenreAction[i].backdrop_path}" class="movies__container--movie-image"/>`
     }
-    actionMovies.style.overflow = "auto"
-    actionMovies.style.display = "flex"
 
-    //data sur les moviesGenreComedy
-    let moviesGenreComedy = await fetchByGenreMovies(35)
-    moviesGenreComedy = moviesGenreComedy.results
-    //comedyMovie structure de la section
-    let comedyMovies = moviesContainer[3]
-    // récupérer les résultats des films de genre Comedy
-    for (let i = 0; i < moviesGenreComedy.length; i++) {
-        // console.log(movieGenreComedy)
-        comedyMovies.innerHTML += ` 
-        <img data-key-id=${moviesGenreComedy[i].id} src="https://image.tmdb.org/t/p/original//${moviesGenreComedy[i].backdrop_path}" class="movies__container--movie-image"/>`
-    }
-    comedyMovies.style.overflow = "auto"
-    comedyMovies.style.display = "flex"
-
-    //data sur les moviesGenreDocumentary
-    let moviesGenreDocumentary = await fetchByGenreMovies(99)
-    moviesGenreDocumentary = moviesGenreDocumentary.results
-    //documentaryMovie structure de la section
-    let documentaryMovies = moviesContainer[4]
-    // récupérer les résultats des films de genre Documentary
-    for (let i = 0; i < moviesGenreDocumentary.length; i++) {
-        // console.log(movieGenreDocumentary)
-        documentaryMovies.innerHTML += ` 
-        <img data-key-id=${moviesGenreDocumentary[i].id} src="https://image.tmdb.org/t/p/original//${moviesGenreDocumentary[i].backdrop_path}" class="movies__container--movie-image"/>`
-    }
-    documentaryMovies.style.overflow = "auto"
-    documentaryMovies.style.display = "flex"
+    // exécuter la fonction display
+    display(fetchNetflixOriginals, document.getElementsByClassName("movies__container--movie__netflix")[0], 'poster')
+    display(fetchTrending, document.getElementsByClassName("movies__container--movie")[0], 'backdrop')
+    display(fetchTopRated, document.getElementsByClassName("movies__container--movie")[1], 'backdrop')
+    display(fetchByGenreMovies, document.getElementsByClassName("movies__container--movie")[2], 'backdrop', 28)
+    display(fetchByGenreMovies, document.getElementsByClassName("movies__container--movie")[3], 'backdrop', 35)
+    display(fetchByGenreMovies, document.getElementsByClassName("movies__container--movie")[4], 'backdrop', 99)
 })();
-
-
-// (() => {
-//   //Callback
-//   const getResponse = (data) => {
-//     return data;
-//   };
-//   try {
-//     let movie = fetchMovie(157336, getResponse);
-//     console.log(movie);
-//     document.getElementById("header").innerHTML = Header(movie);
-//     document.getElementById("header").style.backgroundImage = `url(https://image.tmdb.org/t/p/original/${movie.backdrop_path})`;
-//   }
-//   catch(e){
-//     console.log(e)
-//   }
-
-// })();
-
-//2
-// (() => {
-//     let movie = fetchMovie(157336).then(movie => {
-//         console.log(movie)
-//         document.getElementById("header").innerHTML = Header(movie);
-//         document.getElementById("header").style.backgroundImage = `url(https://image.tmdb.org/t/p/original/${movie.backdrop_path})`;
-//     })
-
-// })();
