@@ -1,5 +1,6 @@
 import { fetchMovie, fetchSerie, fetchNetflixOriginals, fetchTrending, fetchTopRated, fetchByGenreMovies } from "./apiService.js";
 import Header from "./components/Header.mjs";
+import Modals from "./components/Modals.mjs";
 
 (async () => {
     // data sur les Movie : pour le header
@@ -48,7 +49,6 @@ import Header from "./components/Header.mjs";
                 }
             }
         }
-
     }
 
     // exécuter la fonction display
