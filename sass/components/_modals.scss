@@ -1,0 +1,62 @@
+.container-modal {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: white;
+    height: 350px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .container-linear {
+        width: 70%;
+        background: rgb(0, 0, 0);
+        background: linear-gradient(90deg, rgba(0, 0, 0, 1) 63%, rgba(0, 0, 0, 0.7200956937799043) 88%, rgba(0, 0, 0, 0) 100%);
+        .containerInfo {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 4rem 0 0 3rem;
+            height: 100%;
+            width: 70%;
+            row-gap: 1.5em;
+            h3 {
+                font-size: 3rem;
+            }
+            .rating {
+                color: green;
+                font-size: 1.5rem;
+            }
+            p {
+                font-size: 1.5rem;
+            }
+            .paraDescription {
+                color: rgba(255, 255, 255, 0.427);
+            }
+            #buttonPlay {
+                color: white;
+                background-color: red;
+                border: 1px solid red;
+                border-radius: 2px;
+                margin-right: 10px;
+                padding: 7px 15px;
+                cursor: pointer;
+            }
+            #buttonPlus {
+                color: white;
+                background-color: black;
+                border: 1px solid rgba(255, 255, 255, 0.427);
+                border-radius: 2px;
+                padding: 7px 15px;
+                cursor: pointer;
+            }
+            .fas {
+                padding-right: 6px;
+            }
+        }
+    }
+    .buttonCross {
+        margin: 10px;
+        cursor: pointer;
+    }
+}

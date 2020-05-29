@@ -9,6 +9,9 @@ import Modals from "./components/Modals.mjs";
     document.getElementById("header").innerHTML = Header(movie);
     // affichage de l'image de fond 
     document.getElementById("header").style.backgroundImage = `url(https://image.tmdb.org/t/p/original/${movie.backdrop_path})`;
+    
+    // gestion de l'afficahge des modals initié à 0, le 6e appel de la fonction display va l'exécuter
+    var nbAppelDisplay = 0
 
     // function pour afficher les vignettes film ou série des sections : récupère données via apiService
     // funcFetch : function fetch avec ou sans paramètre (paraFunc, null par défaut, autrement désigne le genre), htmlElmt : la div conteneur de l'image, 
@@ -48,6 +51,87 @@ import Modals from "./components/Modals.mjs";
                     continue
                 }
             }
+        }
+
+        nbAppelDisplay++
+        if (nbAppelDisplay >= 6) {
+            // Affichage des modales
+            let images = Array.from(document.querySelectorAll('.movies__container--movie-image'))
+            images.map(function(elm) {
+                elm.addEventListener('click', async function() {
+                    let id = this.getAttribute('data-key-id')
+                    let isSerie = this.getAttribute('data-key-serie')
+                    
+                    if (isSerie == "true") {
+                        let nbDiv = document.getElementsByClassName('js-nb')
+                        if (nbDiv.length < 1) {                            
+                            let serie = await fetchSerie(id)                        
+                            let containerSerieNetflix = document.getElementsByClassName('movies__container--movie__netflix')[0]
+                            let div = document.createElement('div')
+                            div.classList.add('js-nb')
+                            // implement Modals 
+                            div.innerHTML = Modals(serie)
+                            containerSerieNetflix.after(div)
+
+                            // Button Cross
+                            let buttonCross = document.getElementsByClassName('buttonCross')[0]
+                            buttonCross.addEventListener('click', function() {
+                                buttonCross.parentElement.remove()
+                            })
+
+                            // Background image Modales
+                            let bgModals = document.getElementsByClassName('container-modal')[0]
+                            bgModals.style.backgroundImage = `url(https://image.tmdb.org/t/p/original//${serie.backdrop_path})`                        
+                        } else {
+                            let removeSerie = document.getElementsByClassName('js-nb')[0].remove()
+                            let serie = await fetchSerie(id)
+                            let containerSerieNetflix = document.getElementsByClassName('movies__container--movie__netflix')[0]
+                            let div = document.createElement('div')
+                            div.classList.add('js-nb')
+                            div.innerHTML = Modals(serie)
+                            containerSerieNetflix.after(div)
+                            let buttonCross = document.getElementsByClassName('buttonCross')[0]
+                            buttonCross.addEventListener('click', function() {
+                                buttonCross.parentElement.remove()
+                            })
+                            let bgModals = document.getElementsByClassName('container-modal')[0]
+                            bgModals.style.backgroundImage = `url(https://image.tmdb.org/t/p/original//${serie.backdrop_path})`   
+                        }                        
+                    } else {
+                        let nbDiv = document.getElementsByClassName('js-nb')                          
+                        if (nbDiv.length < 1) {
+                            let movie = await fetchMovie(id)
+                            let parentMovie = this.parentElement
+                            let divMovie = document.createElement('div')
+                            divMovie.classList.add('js-nb')
+                            divMovie.innerHTML = Modals(movie)
+                            parentMovie.after(divMovie)
+                            let buttonCross = document.getElementsByClassName('buttonCross')[0]
+                            buttonCross.addEventListener('click', function() {
+                                buttonCross.parentElement.remove()
+                            })
+                            let bgModals = document.getElementsByClassName('container-modal')[0]
+                            bgModals.style.backgroundImage = `url(https://image.tmdb.org/t/p/original//${movie.backdrop_path})`
+                        } else {
+                            document.getElementsByClassName('js-nb')[0].remove()
+                            let movie = await fetchMovie(id)
+                            let parentMovie = this.parentElement
+                            let divMovie = document.createElement('div')
+                            divMovie.classList.add('js-nb')
+                            divMovie.innerHTML = Modals(movie)
+                            parentMovie.after(divMovie)
+                            let buttonCross = document.getElementsByClassName('buttonCross')[0]
+                            buttonCross.addEventListener('click', function() {
+                                buttonCross.parentElement.remove()
+                            })
+                            let bgModals = document.getElementsByClassName('container-modal')[0]
+                            bgModals.style.backgroundImage = `url(https://image.tmdb.org/t/p/original//${movie.backdrop_path})`
+                        } 
+                    }
+                })
+            })
+
+
         }
     }
 
