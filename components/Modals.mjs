@@ -1,3 +1,4 @@
+// fonction de la modale : récupérer les infos du film (props > représente les fetch qu’on va retourner)
 export default function Modals(props) {
     return `
     <div class="container-modal">

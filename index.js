@@ -3,11 +3,11 @@ import Header from "./components/Header.mjs";
 import Modals from "./components/Modals.mjs";
 
 (async () => {
-    // data sur les Movie : pour le header
+    // récupérer la data sur les films (ici un film précis)
     let movie = await fetchMovie(542178);
-    // récupérer les résultats des films pour le header
+    // affichage dans l'élement header des données films selon le module Header
     document.getElementById("header").innerHTML = Header(movie);
-    // affichage de l'image de fond 
+    // affichage de l'image d'arrière plan dans le header
     document.getElementById("header").style.backgroundImage = `url(https://image.tmdb.org/t/p/original/${movie.backdrop_path})`;
     
     // gestion de l'afficahge des modals initié à 0, le 6e appel de la fonction display va l'exécuter
@@ -17,7 +17,7 @@ import Modals from "./components/Modals.mjs";
     // funcFetch : function fetch avec ou sans paramètre (paraFunc, null par défaut, autrement désigne le genre), htmlElmt : la div conteneur de l'image, 
     async function display(funcFetch, htmlElmt, typeImg, paraFunc = null) {
 
-        // data de chaque section/catégorie de films/séries
+        // récupère le tableau des résultats sur chaque section/catégorie de films/séries
         let showsMovies = await funcFetch(paraFunc)
         showsMovies = showsMovies.results
         console.log(showsMovies)
@@ -53,77 +53,116 @@ import Modals from "./components/Modals.mjs";
             }
         }
 
+        // gestion de l'affichage des modales
+        // au 6e appel de la fonction display, exécution de ce qui est dans la fonction
         nbAppelDisplay++
         if (nbAppelDisplay >= 6) {
-            // Affichage des modales
+            // retourne un tableau pour sélectionner toutes les images
             let images = Array.from(document.querySelectorAll('.movies__container--movie-image'))
+            // chaque image passe par une boucle 
             images.map(function(elm) {
+                // écoute l'évènement click, qui déclenche la fonction suivante 
                 elm.addEventListener('click', async function() {
+                    // cibler l'attribut data-key-id pour récupérer l'id du contenu
                     let id = this.getAttribute('data-key-id')
+                    // cibler l'attribut data-key-serie pour identifier si le contenu est une serie ou non
                     let isSerie = this.getAttribute('data-key-serie')
                     
+                    // si le contenu est une serie
                     if (isSerie == "true") {
-                        let nbDiv = document.getElementsByClassName('js-nb')
-                        if (nbDiv.length < 1) {                            
-                            let serie = await fetchSerie(id)                        
+                        // 1A récupère élément conteneur pour la modale (série ou film)
+                        let modalWindow = document.getElementsByClassName('modal-window')
+                        // si ce conteneur est présent 
+                        if (modalWindow.length < 1) {
+                            // récupérer la data des séries en fonction de leur id                         
+                            let serie = await fetchSerie(id)
+                            // récupère le conteneur affichant les vignettes de la section séries Netflix                  
                             let containerSerieNetflix = document.getElementsByClassName('movies__container--movie__netflix')[0]
-                            let div = document.createElement('div')
-                            div.classList.add('js-nb')
-                            // implement Modals 
+                            // création d'un conteneur pour la modale et attribution d'une classe
+                            let div = document.createElement('div')        
+                            div.classList.add('modal-window')
+                            // affichage des données séries dans la fenêtre modale, selon le module Modals
                             div.innerHTML = Modals(serie)
+                            // implémentation des modales après le conteneur de la section séries Netflix
                             containerSerieNetflix.after(div)
 
-                            // Button Cross
+                            // ajout d'un bouton croix pour fermer la modale
                             let buttonCross = document.getElementsByClassName('buttonCross')[0]
                             buttonCross.addEventListener('click', function() {
                                 buttonCross.parentElement.remove()
                             })
 
-                            // Background image Modales
+                            // affichage des images d'arrière plan dans les modales
                             let bgModals = document.getElementsByClassName('container-modal')[0]
                             bgModals.style.backgroundImage = `url(https://image.tmdb.org/t/p/original//${serie.backdrop_path})`                        
                         } else {
-                            let removeSerie = document.getElementsByClassName('js-nb')[0].remove()
+                            // 1B affiche pas la modale
+                            let removeSerie = document.getElementsByClassName('modal-window')[0].remove()
+                            // récupérer la data des séries en fonction de leur id   
                             let serie = await fetchSerie(id)
+                            // récupère le conteneur affichant les vignettes de la section séries Netflix   
                             let containerSerieNetflix = document.getElementsByClassName('movies__container--movie__netflix')[0]
+                            // création d'un conteneur pour la modale et attribution d'une classe
                             let div = document.createElement('div')
-                            div.classList.add('js-nb')
+                            div.classList.add('modal-window')
+                            // affichage des données séries dans la fenêtre modale, selon le module Modals
                             div.innerHTML = Modals(serie)
+                            // implémentation des modales après le conteneur de la section séries Netflix
                             containerSerieNetflix.after(div)
+
+                            // ajout d'un bouton croix pour fermer la modale
                             let buttonCross = document.getElementsByClassName('buttonCross')[0]
                             buttonCross.addEventListener('click', function() {
                                 buttonCross.parentElement.remove()
                             })
+                            // affichage des images d'arrière plan dans les modales
                             let bgModals = document.getElementsByClassName('container-modal')[0]
                             bgModals.style.backgroundImage = `url(https://image.tmdb.org/t/p/original//${serie.backdrop_path})`   
                         }                        
                     } else {
-                        let nbDiv = document.getElementsByClassName('js-nb')                          
-                        if (nbDiv.length < 1) {
+                        // 1A récupère élément conteneur pour la modale (série ou film)
+                        let modalWindow = document.getElementsByClassName('modal-window')                          
+                        if (modalWindow.length < 1) {
+                            // récupérer la data des films en fonction de leur id
                             let movie = await fetchMovie(id)
+                            // variable parentMovie : récupère l'élément parent, conteneur affichant les vignettes des sections films par genre
                             let parentMovie = this.parentElement
+                            // création d'un conteneur pour la modale et attribution d'une classe
                             let divMovie = document.createElement('div')
-                            divMovie.classList.add('js-nb')
+                            divMovie.classList.add('modal-window')
+                            // affichage des données films dans la fenêtre modale, selon le module Modals
                             divMovie.innerHTML = Modals(movie)
+                            // implémentation des modales après le conteneur des sections films par genre
                             parentMovie.after(divMovie)
+
+                            // ajout d'un bouton croix pour fermer la modale
                             let buttonCross = document.getElementsByClassName('buttonCross')[0]
                             buttonCross.addEventListener('click', function() {
                                 buttonCross.parentElement.remove()
                             })
+
+                            // affichage des images d'arrière plan dans les modales
                             let bgModals = document.getElementsByClassName('container-modal')[0]
                             bgModals.style.backgroundImage = `url(https://image.tmdb.org/t/p/original//${movie.backdrop_path})`
                         } else {
-                            document.getElementsByClassName('js-nb')[0].remove()
+                            // 1B affiche pas la modale
+                            let removeSerie = document.getElementsByClassName('modal-window')[0].remove()
+                            // récupérer la data des films en fonction de leur id
                             let movie = await fetchMovie(id)
+                            //variable parentMovie : récupère l'élément parent, conteneur affichant les vignettes des sections films par genre
                             let parentMovie = this.parentElement
                             let divMovie = document.createElement('div')
-                            divMovie.classList.add('js-nb')
+                            divMovie.classList.add('modal-window')
                             divMovie.innerHTML = Modals(movie)
                             parentMovie.after(divMovie)
+
+                            // ajout d'un bouton croix pour fermer la modale
                             let buttonCross = document.getElementsByClassName('buttonCross')[0]
                             buttonCross.addEventListener('click', function() {
                                 buttonCross.parentElement.remove()
                             })
+
+                            // affichage des images d'arrière plan dans les modales
                             let bgModals = document.getElementsByClassName('container-modal')[0]
                             bgModals.style.backgroundImage = `url(https://image.tmdb.org/t/p/original//${movie.backdrop_path})`
                         } 
