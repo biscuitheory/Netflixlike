@@ -1,4 +1,4 @@
-import { fetchMovie, fetchSerie, fetchNetflixOriginals, fetchTrending, fetchTopRated, fetchByGenreMovies } from "./apiService.js";
+import { fetchMovie, fetchSerie, fetchNetflixOriginals, fetchTrending, fetchTopRated, fetchByGenreMovies, fetchSearch } from "./apiService.js";
 import Header from "./components/Header.mjs";
 import Modals from "./components/Modals.mjs";
 
@@ -132,6 +132,55 @@ import Modals from "./components/Modals.mjs";
             })
 
 
+            // Ciblage des éléments DOM destinés à la function recherche de contenus
+            // Pour réguler le délai de traitement et d'affichage des résultats de recherche
+            var timerId; 
+            // Le champ de saisie pour la recherche
+            var searchBoxDom = document.getElementsByClassName('navigation__container--left__input')[0];
+            // Le conteneur pour l'espace dédié à la recherche
+            var searchContainer = document.getElementsByClassName('search-container')[0]
+            
+            // Fonction initiale de recherche des contenus
+            async function makeAPICall() {
+                // console.log('ok')
+                let searchContent = await fetchSearch(searchBoxDom.value);
+                searchContent = searchContent.results
+                searchContainer.innerHTML = ''
+                for (let i = 0; i < searchContent.length; i++){
+                    searchContainer.innerHTML += `
+                    <img data-key-id=${searchContent[i].id} data-key-serie=true src="https://image.tmdb.org/t/p/original//${searchContent[i].poster_path}" class="search-movie-poster" onerror="this.style.display='none'" alt="${searchContent[i].original_title || searchContent[i].original_name}"/>
+                   `
+                }
+            }
+
+            // Fonction debounce : gérer la fonction de recherche et le délai de réponse (debounce en millisecondes)
+            var debounceFunction = function(func, delay) {
+                // Arrête l'exécution de la méthode setTimeout
+                clearTimeout(timerId)
+                // Exécution de la fonction de recherche après le délai
+                timerId = setTimeout(func, delay)
+            }
+
+            // Ecouteur d'évènement sur le champ de saisie pour la recherche
+            searchBoxDom.addEventListener('input', function() {
+                // Si des charactères sont saisis dans le champ, exécution de la fonction recherche en mode debounce
+                if (searchBoxDom.value.length >= 1) {
+                    debounceFunction(makeAPICall, 300)
+                    // affichage du conteneur dédié à la recherche
+                    searchContainer.style.display = 'flex'
+                    // le header et le conteneur films et séries devienent invisibles
+                    document.getElementById('header').style.display = 'none'
+                    document.getElementsByClassName('movies')[0].style.display = 'none'
+                } else {
+                    // S'il n'y aucun caractère dans le champ de saisie
+                    searchContainer.innerHTML = ''
+                    // le conteneur dédié à la recherche reste caché
+                    searchContainer.style.display = 'none'
+                    // le header et le conteneur films et séries sont visibles
+                    document.getElementById('header').style.display = 'flex'
+                    document.getElementsByClassName('movies')[0].style.display = 'block'
+                }
+            })
         }
     }
 

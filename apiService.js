@@ -42,3 +42,10 @@ export async function fetchByGenreMovies(genre) {
   let genreMovies = await res.json();
   return genreMovies;
 }
+
+export async function fetchSearch(query){
+  const url =`${API_URL}search/multi?api_key=${API_KEY}&query=${query}&include_adult=false`
+   let res = await fetch(url)
+   let queryMovies = await res.json()
+   return queryMovies;
+}
