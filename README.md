@@ -4,6 +4,8 @@
 
 Tech stack: Vanilla JS, HTML, SASS
 
+:link: https://netflixlikebylus.netlify.app/
+
 ### Header
 ![Header](/img/netflixlike_header.jpg)
 
