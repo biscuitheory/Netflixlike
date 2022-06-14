@@ -1,0 +1,23 @@
+{
+  "name": "netflixlike",
+  "version": "1.0.0",
+  "description": ":tv: Project Netflixlike front-end AJAX :tv:",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/biscuitheory/Netflixlike.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/biscuitheory/Netflixlike/issues"
+  },
+  "homepage": "https://github.com/biscuitheory/Netflixlike#readme"
+}
